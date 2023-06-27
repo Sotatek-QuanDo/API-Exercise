@@ -1,10 +1,7 @@
-import 'package:api_call_test/class/post_description.dart';
+import 'package:api_call_test/screen/edit_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:api_call_test/class/DioClient.dart';
-
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 class DetailScreen extends StatefulWidget {
   final int id;
@@ -16,134 +13,103 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-  final TextEditingController _userIDController = TextEditingController();
-
-  final TextEditingController _idController = TextEditingController();
-
-  final TextEditingController _titleController = TextEditingController();
-
-  final TextEditingController _bodyController = TextEditingController();
-
-  var _isEnabled = false;
-
-  var _isEditing = false;
   DioClient client = DioClient();
 
-  onChangePost(int userID, int id, String title, String body) async {
-    client.editPost(
-        userID: userID, id: id, title: title, body: body, context: context);
-    setState(() {
-      // Disable editing
-      _isEditing = false;
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    client.getPostDescription(widget.id).then((postDescription) {
-      _userIDController.text = postDescription.userId.toString();
-      _idController.text = postDescription.id.toString();
-      _titleController.text = postDescription.title;
-      _bodyController.text = postDescription.body;
-    });
+  void navigateEditScreen(int id) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (ctx) => EditScreen(
+          id: id,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Detail Screen'),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                client.deleteUser(id: widget.id.toString(), context: context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red, // Set the background color to red
-              ),
-              child: const Text(
-                'Delete',
-              ),
+      appBar: AppBar(
+        title: const Text('Detail Screen'),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              client.deleteUser(id: widget.id.toString(), context: context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red, // Set the background color to red
             ),
-          ],
-        ),
-        body: FutureBuilder(
-          future: client.getPostDescription(widget.id),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Container(
-                  alignment: Alignment.center,
-                  child: const CircularProgressIndicator());
-            } else {
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
-                      controller: _userIDController,
-                      enabled: _isEditing,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: 'User ID'),
-                    ),
-                    TextField(
-                      controller: _idController,
-                      enabled: _isEditing,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: 'ID'),
-                    ),
-                    TextField(
-                      controller: _titleController,
-                      enabled: _isEditing,
-                      decoration: const InputDecoration(labelText: 'Title'),
-                    ),
-                    TextField(
-                      controller: _bodyController,
-                      enabled: _isEditing,
-                      decoration: const InputDecoration(labelText: 'Body'),
-                    ),
-                    const SizedBox(height: 16.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              // Enable editing
-                              _isEditing = true;
-                              _isEnabled = true;
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                          ),
-                          child: const Text('Edit'),
+            child: const Text(
+              'Delete',
+            ),
+          ),
+        ],
+      ),
+      body: FutureBuilder(
+        future: client.getPostDescription(widget.id),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Container(
+                alignment: Alignment.center,
+                child: const CircularProgressIndicator());
+          } else {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'User ID: ${snapshot.data!.userId}',
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8.0),
+                  Text(
+                    'ID: ${snapshot.data!.id}',
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8.0),
+                  const Text(
+                    'Title:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    snapshot.data!.title,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 8.0),
+                  const Text(
+                    'Body:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    snapshot.data!.body,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        navigateEditScreen(
+                          snapshot.data!.id,
+                        );
+                      },
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.blue,
                         ),
-                        Visibility(
-                          visible: _isEnabled,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              onChangePost(
-                                int.parse(_userIDController.text),
-                                int.parse(_idController.text),
-                                _titleController.text,
-                                _bodyController.text,
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                            ),
-                            child: const Text('Save'),
-                          ),
-                        ),
-                      ],
+                      ),
+                      child: const Text(
+                        'Edit',
+                      ),
                     ),
-                  ],
-                ),
-              );
-            }
-          },
-        ));
+                  ),
+                ],
+              ),
+            );
+          }
+        },
+      ),
+    );
   }
 }
