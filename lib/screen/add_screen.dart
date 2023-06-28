@@ -16,6 +16,7 @@ class _AddScreenState extends State<AddScreen> {
   DioClient client = DioClient();
 
   void _submitForm(int userID, int id, String title, String body) async {
+<<<<<<< HEAD
     try {
       await client.addNewPost(userID: userID, id: id, title: title, body: body);
       const snackBar = SnackBar(
@@ -32,6 +33,10 @@ class _AddScreenState extends State<AddScreen> {
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
+=======
+    await client.addNewPost(
+        userID: userID, id: id, title: title, body: body, context: context);
+>>>>>>> fc7e31b1ea217fe8fc270063a2faadbbd3c9cd13
   }
 
   @override

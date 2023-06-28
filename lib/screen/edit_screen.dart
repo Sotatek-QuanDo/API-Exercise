@@ -126,7 +126,11 @@ class _EditScreenState extends State<EditScreen> {
                                 body,
                               );
                             }
+<<<<<<< HEAD
                             navigateDetailScreen();
+=======
+
+>>>>>>> fc7e31b1ea217fe8fc270063a2faadbbd3c9cd13
                             FocusManager.instance.primaryFocus?.unfocus();
                           },
                           child: const Text('Save'),
