@@ -15,12 +15,8 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Post> postList = [];
   DioClient client = DioClient();
 
-  void navigateAddScreen(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (ctx) => AddScreen(),
-      ),
-    );
+  void navigateAddScreen() {
+    Navigator.of(context).pushNamed('/add');
   }
 
   @override
@@ -31,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              navigateAddScreen(context);
+              navigateAddScreen();
             },
             icon: const Icon(
               Icons.add,

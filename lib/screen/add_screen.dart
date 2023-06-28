@@ -11,13 +11,27 @@ class _AddScreenState extends State<AddScreen> {
   int id = 0;
   String title = "";
   String body = "";
-  final GlobalKey<FormState> _formKey = GlobalKey();
+  final _formKey = GlobalKey<FormState>();
 
   DioClient client = DioClient();
 
-  void _submitForm(int userID, int id, String title, String body) {
-    client.addNewPost(
-        userID: userID, id: id, title: title, body: body, context: context);
+  void _submitForm(int userID, int id, String title, String body) async {
+    try {
+      await client.addNewPost(userID: userID, id: id, title: title, body: body);
+      const snackBar = SnackBar(
+        content: Text(
+          'Add a new post succesfully',
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } catch (e) {
+      const snackBar = SnackBar(
+        content: Text(
+          'Add a new post failed',
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 
   @override
@@ -37,6 +51,7 @@ class _AddScreenState extends State<AddScreen> {
             child: Column(
               children: [
                 TextFormField(
+                  keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "Please enter some text";
@@ -46,10 +61,10 @@ class _AddScreenState extends State<AddScreen> {
                   onSaved: (value) {
                     userID = int.parse(value!);
                   },
-                  keyboardType: TextInputType.number,
                   decoration: const InputDecoration(labelText: 'User ID'),
                 ),
                 TextFormField(
+                  keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "Please enter some text";
@@ -57,9 +72,8 @@ class _AddScreenState extends State<AddScreen> {
                     return null;
                   },
                   onSaved: (value) {
-                    userID = int.parse(value!);
+                    id = int.parse(value!);
                   },
-                  keyboardType: TextInputType.number,
                   decoration: const InputDecoration(labelText: 'ID'),
                 ),
                 TextFormField(
@@ -70,7 +84,7 @@ class _AddScreenState extends State<AddScreen> {
                     return null;
                   },
                   onSaved: (value) {
-                    userID = int.parse(value!);
+                    title = value!;
                   },
                   decoration: const InputDecoration(labelText: 'Title'),
                 ),
@@ -82,7 +96,7 @@ class _AddScreenState extends State<AddScreen> {
                     return null;
                   },
                   onSaved: (value) {
-                    userID = int.parse(value!);
+                    body = value!;
                   },
                   decoration: const InputDecoration(labelText: 'Body'),
                 ),
@@ -90,9 +104,11 @@ class _AddScreenState extends State<AddScreen> {
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
                       _submitForm(userID, id, title, body);
+                      Navigator.of(context).pushNamed('/detail', arguments: id);
                     }
-                    _formKey.currentState!.reset();
+
                     FocusManager.instance.primaryFocus?.unfocus();
                   },
                   child: const Text('Post'),

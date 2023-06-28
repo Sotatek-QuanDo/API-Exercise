@@ -10,18 +10,11 @@ class DioClient {
 
   Future<void> deleteUser({
     required String id,
-    required BuildContext context,
   }) async {
-    const snackBar = SnackBar(
-      content: Text(
-        'Delete succesfully',
-      ),
-    );
     try {
       await _dio.delete('https://jsonplaceholder.typicode.com/posts/$id');
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } catch (e) {
-      print('Error deleting user: $e');
+      rethrow;
     }
   }
 
@@ -33,15 +26,7 @@ class DioClient {
       List<dynamic> jsonData = postData.data;
       postList = jsonData.map((post) => Post.fromJson(post)).toList();
     } on DioError catch (e) {
-      if (e.response != null) {
-        print('Dio error!');
-        print('STATUS: ${e.response?.statusCode}');
-        print('DATA: ${e.response?.data}');
-        print('HEADERS: ${e.response?.headers}');
-      } else {
-        print('Error sending request!');
-        print(e.message);
-      }
+      rethrow;
     }
     return postList;
   }
@@ -54,15 +39,7 @@ class DioClient {
       Map<String, dynamic> jsonData = postDescription.data;
       description = PostDescription.fromJson(jsonData);
     } on DioError catch (e) {
-      if (e.response != null) {
-        print('Dio error!');
-        print('STATUS: ${e.response?.statusCode}');
-        print('DATA: ${e.response?.data}');
-        print('HEADERS: ${e.response?.headers}');
-      } else {
-        print('Error sending request!');
-        print(e.message);
-      }
+      rethrow;
     }
     return description;
   }
@@ -72,13 +49,7 @@ class DioClient {
     required int id,
     required String title,
     required String body,
-    required BuildContext context,
   }) async {
-    const snackBar = SnackBar(
-      content: Text(
-        'Add a new post succesfully',
-      ),
-    );
     Map<String, dynamic> data = {
       "userID": userID,
       "id": id,
@@ -91,9 +62,8 @@ class DioClient {
         'https://jsonplaceholder.typicode.com/posts',
         data: jsonEncode(data),
       );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } catch (e) {
-      print('Error new post: $e');
+      rethrow;
     }
   }
 
@@ -102,13 +72,7 @@ class DioClient {
     required int id,
     required String title,
     required String body,
-    required BuildContext context,
   }) async {
-    const snackBar = SnackBar(
-      content: Text(
-        'Edit post succesfully',
-      ),
-    );
     try {
       final response = await _dio.put(
         'https://jsonplaceholder.typicode.com/posts/$id',
@@ -121,9 +85,8 @@ class DioClient {
           },
         ),
       );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } catch (e) {
-      print(e);
+      rethrow;
     }
   }
 }

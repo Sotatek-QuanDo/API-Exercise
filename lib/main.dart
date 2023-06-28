@@ -1,3 +1,6 @@
+import 'package:api_call_test/route/route_generator.dart';
+import 'package:api_call_test/screen/detail_screen.dart';
+import 'package:api_call_test/screen/edit_screen.dart';
 import 'package:api_call_test/screen/home_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -11,11 +14,8 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: HomeScreen(),
-        ),
-      ),
+      initialRoute: '/',
+      onGenerateRoute: RouteGenerator.generateRoute,
     );
   }
 }

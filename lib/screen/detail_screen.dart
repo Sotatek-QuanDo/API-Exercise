@@ -1,4 +1,5 @@
 import 'package:api_call_test/screen/edit_screen.dart';
+import 'package:api_call_test/screen/home_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:api_call_test/class/DioClient.dart';
@@ -6,7 +7,7 @@ import 'package:api_call_test/class/DioClient.dart';
 class DetailScreen extends StatefulWidget {
   final int id;
 
-  DetailScreen({super.key, required this.id});
+  const DetailScreen({super.key, required this.id});
 
   @override
   State<DetailScreen> createState() => _DetailScreenState();
@@ -14,15 +15,31 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen> {
   DioClient client = DioClient();
-
-  void navigateEditScreen(int id) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (ctx) => EditScreen(
-          id: id,
-        ),
-      ),
+  void navigateEditScreen(int id) async {
+    await Navigator.of(context).pushNamed(
+      '/edit',
+      arguments: id,
     );
+  }
+
+  void deletePost(int id) {
+    try {
+      client.deleteUser(id: widget.id.toString());
+      const snackBar = SnackBar(
+        content: Text(
+          'Delete a post succesfully',
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Navigator.popUntil(context, (route) => route.settings.name == '/');
+    } catch (e) {
+      const snackBar = SnackBar(
+        content: Text(
+          'Delete a post failed',
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 
   @override
@@ -33,7 +50,7 @@ class _DetailScreenState extends State<DetailScreen> {
         actions: [
           ElevatedButton(
             onPressed: () {
-              client.deleteUser(id: widget.id.toString(), context: context);
+              deletePost(widget.id);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red, // Set the background color to red

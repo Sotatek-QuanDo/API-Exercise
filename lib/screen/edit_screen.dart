@@ -11,17 +11,35 @@ class EditScreen extends StatefulWidget {
 
 class _EditScreenState extends State<EditScreen> {
   int userID = 0;
-  int id = 0;
   String title = "";
   String body = "";
 
-  final GlobalKey<FormState> _formKey = GlobalKey();
+  final _formKey = GlobalKey<FormState>();
 
   DioClient client = DioClient();
 
   onChangePost(int userID, int id, String title, String body) async {
-    client.editPost(
-        userID: userID, id: id, title: title, body: body, context: context);
+    try {
+      await client.editPost(userID: userID, id: id, title: title, body: body);
+      var snackBar = const SnackBar(
+        content: Text(
+          'Edit post succesfully',
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } catch (e) {
+      var snackBar = const SnackBar(
+        content: Text(
+          'Edit post failed',
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  void navigateDetailScreen() async {
+    await Navigator.of(context).pushNamed('/detail', arguments: widget.id);
+    Navigator.popUntil(context, (route) => route.isFirst);
   }
 
   @override
@@ -33,9 +51,10 @@ class _EditScreenState extends State<EditScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            title,
+            "Post ID: ${widget.id}",
             style: const TextStyle(
-              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
@@ -47,10 +66,6 @@ class _EditScreenState extends State<EditScreen> {
                     alignment: Alignment.center,
                     child: const CircularProgressIndicator());
               } else {
-                userID = snapshot.data!.userId;
-                id = snapshot.data!.id;
-                title = snapshot.data!.title;
-                body = snapshot.data!.body;
                 return Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Form(
@@ -72,20 +87,6 @@ class _EditScreenState extends State<EditScreen> {
                           },
                           decoration:
                               const InputDecoration(labelText: 'User ID'),
-                        ),
-                        TextFormField(
-                          keyboardType: TextInputType.number,
-                          initialValue: snapshot.data!.id.toString(),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Please enter some text";
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            id = int.parse(value!);
-                          },
-                          decoration: const InputDecoration(labelText: 'ID'),
                         ),
                         TextFormField(
                           initialValue: snapshot.data!.title,
@@ -117,14 +118,15 @@ class _EditScreenState extends State<EditScreen> {
                         ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
+                              _formKey.currentState!.save();
                               onChangePost(
                                 userID,
-                                id,
+                                widget.id,
                                 title,
                                 body,
                               );
                             }
-                            _formKey.currentState!.save();
+                            navigateDetailScreen();
                             FocusManager.instance.primaryFocus?.unfocus();
                           },
                           child: const Text('Save'),
