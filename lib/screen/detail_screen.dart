@@ -15,8 +15,8 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen> {
   DioClient client = DioClient();
-  void navigateEditScreen(int id) async {
-    await Navigator.of(context).pushNamed(
+  void navigateEditScreen(int id) {
+    Navigator.of(context).pushNamed(
       '/edit',
       arguments: id,
     );

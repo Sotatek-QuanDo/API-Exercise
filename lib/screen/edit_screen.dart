@@ -1,4 +1,5 @@
 import 'package:api_call_test/class/DioClient.dart';
+import 'package:api_call_test/screen/detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class EditScreen extends StatefulWidget {
@@ -37,9 +38,10 @@ class _EditScreenState extends State<EditScreen> {
     }
   }
 
-  void navigateDetailScreen() async {
-    await Navigator.of(context).pushNamed('/detail', arguments: widget.id);
-    Navigator.popUntil(context, (route) => route.isFirst);
+  void navigateDetailScreen() {
+    Navigator.pushNamedAndRemoveUntil(
+        context, '/detail', (route) => route.isFirst,
+        arguments: widget.id);
   }
 
   @override
@@ -126,11 +128,7 @@ class _EditScreenState extends State<EditScreen> {
                                 body,
                               );
                             }
-<<<<<<< HEAD
                             navigateDetailScreen();
-=======
-
->>>>>>> fc7e31b1ea217fe8fc270063a2faadbbd3c9cd13
                             FocusManager.instance.primaryFocus?.unfocus();
                           },
                           child: const Text('Save'),

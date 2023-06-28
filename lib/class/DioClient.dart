@@ -64,10 +64,6 @@ class DioClient {
       );
     } catch (e) {
       rethrow;
-<<<<<<< HEAD
-=======
-      print('Error new post: $e');
->>>>>>> fc7e31b1ea217fe8fc270063a2faadbbd3c9cd13
     }
   }
 
