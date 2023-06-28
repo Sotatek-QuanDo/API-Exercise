@@ -10,13 +10,12 @@ class EditScreen extends StatefulWidget {
 }
 
 class _EditScreenState extends State<EditScreen> {
-  final TextEditingController _userIDController = TextEditingController();
+  int userID = 0;
+  int id = 0;
+  String title = "";
+  String body = "";
 
-  final TextEditingController _idController = TextEditingController();
-
-  final TextEditingController _titleController = TextEditingController();
-
-  final TextEditingController _bodyController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey();
 
   DioClient client = DioClient();
 
@@ -26,74 +25,117 @@ class _EditScreenState extends State<EditScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    client.getPostDescription(widget.id).then((postDescription) {
-      _userIDController.text = postDescription.userId.toString();
-      _idController.text = postDescription.id.toString();
-      _titleController.text = postDescription.title;
-      _bodyController.text = postDescription.body;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          _titleController.text,
-          style: const TextStyle(
-            color: Colors.black,
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            title,
+            style: const TextStyle(
+              color: Colors.black,
+            ),
           ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: _userIDController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'User ID'),
-            ),
-            TextField(
-              controller: _idController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'ID'),
-            ),
-            TextField(
-              controller: _titleController,
-              decoration: const InputDecoration(labelText: 'Title'),
-            ),
-            TextField(
-              controller: _bodyController,
-              decoration: const InputDecoration(labelText: 'Body'),
-            ),
-            const SizedBox(height: 16.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    onChangePost(
-                      int.parse(_userIDController.text),
-                      int.parse(_idController.text),
-                      _titleController.text,
-                      _bodyController.text,
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+        body: FutureBuilder(
+            future: client.getPostDescription(widget.id),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return Container(
+                    alignment: Alignment.center,
+                    child: const CircularProgressIndicator());
+              } else {
+                userID = snapshot.data!.userId;
+                id = snapshot.data!.id;
+                title = snapshot.data!.title;
+                body = snapshot.data!.body;
+                return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        TextFormField(
+                          keyboardType: TextInputType.number,
+                          initialValue: snapshot.data!.userId.toString(),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter some text";
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            userID = int.parse(value!);
+                          },
+                          decoration:
+                              const InputDecoration(labelText: 'User ID'),
+                        ),
+                        TextFormField(
+                          keyboardType: TextInputType.number,
+                          initialValue: snapshot.data!.id.toString(),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter some text";
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            id = int.parse(value!);
+                          },
+                          decoration: const InputDecoration(labelText: 'ID'),
+                        ),
+                        TextFormField(
+                          initialValue: snapshot.data!.title,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter some text";
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            title = value!;
+                          },
+                          decoration: const InputDecoration(labelText: 'Title'),
+                        ),
+                        TextFormField(
+                          initialValue: snapshot.data!.body,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter some text";
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            body = value!;
+                          },
+                          decoration: const InputDecoration(labelText: 'Body'),
+                        ),
+                        const SizedBox(height: 16.0),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              onChangePost(
+                                userID,
+                                id,
+                                title,
+                                body,
+                              );
+                            }
+                            _formKey.currentState!.save();
+                            FocusManager.instance.primaryFocus?.unfocus();
+                          },
+                          child: const Text('Save'),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: const Text('Save'),
-                ),
-              ],
-            ),
-          ],
-        ),
+                );
+              }
+            }),
       ),
     );
-    ;
   }
 }

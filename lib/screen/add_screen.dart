@@ -7,66 +7,99 @@ class AddScreen extends StatefulWidget {
 }
 
 class _AddScreenState extends State<AddScreen> {
-  final _userIDController = TextEditingController();
-  final _idController = TextEditingController();
-  final _titleController = TextEditingController();
-  final _bodyController = TextEditingController();
+  int userID = 0;
+  int id = 0;
+  String title = "";
+  String body = "";
+  final GlobalKey<FormState> _formKey = GlobalKey();
 
   DioClient client = DioClient();
 
-  void _submitForm() {
-    final userID = _userIDController.text;
-    final id = _idController.text;
-    final title = _titleController.text;
-    final body = _bodyController.text;
-
+  void _submitForm(int userID, int id, String title, String body) {
     client.addNewPost(
-        userID: int.parse(userID),
-        id: int.parse(id),
-        title: title,
-        body: body,
-        context: context);
-
-    _userIDController.clear();
-    _idController.clear();
-    _titleController.clear();
-    _bodyController.clear();
+        userID: userID, id: id, title: title, body: body, context: context);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('New Post'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _userIDController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'User ID'),
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('New Post'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter some text";
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    userID = int.parse(value!);
+                  },
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'User ID'),
+                ),
+                TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter some text";
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    userID = int.parse(value!);
+                  },
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'ID'),
+                ),
+                TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter some text";
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    userID = int.parse(value!);
+                  },
+                  decoration: const InputDecoration(labelText: 'Title'),
+                ),
+                TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter some text";
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    userID = int.parse(value!);
+                  },
+                  decoration: const InputDecoration(labelText: 'Body'),
+                ),
+                const SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _submitForm(userID, id, title, body);
+                    }
+                    _formKey.currentState!.reset();
+                    FocusManager.instance.primaryFocus?.unfocus();
+                  },
+                  child: const Text('Post'),
+                ),
+              ],
             ),
-            TextField(
-              controller: _idController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'ID'),
-            ),
-            TextField(
-              controller: _titleController,
-              decoration: const InputDecoration(labelText: 'Title'),
-            ),
-            TextField(
-              controller: _bodyController,
-              decoration: const InputDecoration(labelText: 'Body'),
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _submitForm,
-              child: const Text('Post'),
-            ),
-          ],
+          ),
         ),
       ),
     );
