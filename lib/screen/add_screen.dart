@@ -15,8 +15,8 @@ class _AddScreenState extends State<AddScreen> {
 
   DioClient client = DioClient();
 
-  void _submitForm(int userID, int id, String title, String body) {
-    client.addNewPost(
+  void _submitForm(int userID, int id, String title, String body) async {
+    await client.addNewPost(
         userID: userID, id: id, title: title, body: body, context: context);
   }
 
@@ -57,7 +57,7 @@ class _AddScreenState extends State<AddScreen> {
                     return null;
                   },
                   onSaved: (value) {
-                    userID = int.parse(value!);
+                    id = int.parse(value!);
                   },
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(labelText: 'ID'),
@@ -70,7 +70,7 @@ class _AddScreenState extends State<AddScreen> {
                     return null;
                   },
                   onSaved: (value) {
-                    userID = int.parse(value!);
+                    title = value!;
                   },
                   decoration: const InputDecoration(labelText: 'Title'),
                 ),
@@ -82,7 +82,7 @@ class _AddScreenState extends State<AddScreen> {
                     return null;
                   },
                   onSaved: (value) {
-                    userID = int.parse(value!);
+                    body = value!;
                   },
                   decoration: const InputDecoration(labelText: 'Body'),
                 ),
@@ -90,6 +90,7 @@ class _AddScreenState extends State<AddScreen> {
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
                       _submitForm(userID, id, title, body);
                     }
                     _formKey.currentState!.reset();

@@ -47,10 +47,6 @@ class _EditScreenState extends State<EditScreen> {
                     alignment: Alignment.center,
                     child: const CircularProgressIndicator());
               } else {
-                userID = snapshot.data!.userId;
-                id = snapshot.data!.id;
-                title = snapshot.data!.title;
-                body = snapshot.data!.body;
                 return Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Form(
@@ -117,6 +113,7 @@ class _EditScreenState extends State<EditScreen> {
                         ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
+                              _formKey.currentState!.save();
                               onChangePost(
                                 userID,
                                 id,
@@ -124,7 +121,7 @@ class _EditScreenState extends State<EditScreen> {
                                 body,
                               );
                             }
-                            _formKey.currentState!.save();
+
                             FocusManager.instance.primaryFocus?.unfocus();
                           },
                           child: const Text('Save'),

@@ -87,12 +87,13 @@ class DioClient {
     };
 
     try {
-      Response response = await _dio.post(
+      await _dio.post(
         'https://jsonplaceholder.typicode.com/posts',
         data: jsonEncode(data),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } catch (e) {
+      rethrow;
       print('Error new post: $e');
     }
   }
