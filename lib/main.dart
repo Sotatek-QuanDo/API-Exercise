@@ -1,7 +1,5 @@
 import 'package:api_call_test/route/route_generator.dart';
-import 'package:api_call_test/screen/detail_screen.dart';
-import 'package:api_call_test/screen/edit_screen.dart';
-import 'package:api_call_test/screen/home_screen.dart';
+import 'package:api_call_test/UI/page/home_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -9,7 +7,7 @@ void main() {
 }
 
 class MainApp extends StatelessWidget {
-  MainApp({super.key});
+  const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {

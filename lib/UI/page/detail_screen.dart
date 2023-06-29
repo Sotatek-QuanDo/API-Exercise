@@ -1,30 +1,23 @@
-import 'package:api_call_test/screen/edit_screen.dart';
-import 'package:api_call_test/screen/home_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'package:api_call_test/class/DioClient.dart';
+import 'package:api_call_test/Services/base_client/dio_client.dart';
 
-class DetailScreen extends StatefulWidget {
+class DetailScreen extends StatelessWidget {
   final int id;
 
-  const DetailScreen({super.key, required this.id});
+  DetailScreen({super.key, required this.id});
 
-  @override
-  State<DetailScreen> createState() => _DetailScreenState();
-}
-
-class _DetailScreenState extends State<DetailScreen> {
   DioClient client = DioClient();
-  void navigateEditScreen(int id) {
+  void navigateEditScreen(int? id, BuildContext context) {
     Navigator.of(context).pushNamed(
       '/edit',
       arguments: id,
     );
   }
 
-  void deletePost(int id) {
+  void deletePost(int id, BuildContext context) {
     try {
-      client.deleteUser(id: widget.id.toString());
+      client.deleteUser(id: id.toString());
       const snackBar = SnackBar(
         content: Text(
           'Delete a post succesfully',
@@ -50,7 +43,7 @@ class _DetailScreenState extends State<DetailScreen> {
         actions: [
           ElevatedButton(
             onPressed: () {
-              deletePost(widget.id);
+              deletePost(id, context);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red, // Set the background color to red
@@ -62,7 +55,7 @@ class _DetailScreenState extends State<DetailScreen> {
         ],
       ),
       body: FutureBuilder(
-        future: client.getPostDescription(widget.id),
+        future: client.getPostDescription(id),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Container(
@@ -91,7 +84,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    snapshot.data!.title,
+                    '(${snapshot.data!.title})',
                     style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(height: 8.0),
@@ -100,16 +93,14 @@ class _DetailScreenState extends State<DetailScreen> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    snapshot.data!.body,
+                    '(${snapshot.data!.body})',
                     style: const TextStyle(fontSize: 16),
                   ),
                   Align(
                     alignment: Alignment.bottomRight,
                     child: ElevatedButton(
                       onPressed: () {
-                        navigateEditScreen(
-                          snapshot.data!.id,
-                        );
+                        navigateEditScreen(snapshot.data!.id, context);
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(

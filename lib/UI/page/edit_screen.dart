@@ -1,5 +1,4 @@
-import 'package:api_call_test/class/DioClient.dart';
-import 'package:api_call_test/screen/detail_screen.dart';
+import 'package:api_call_test/Services/base_client/dio_client.dart';
 import 'package:flutter/material.dart';
 
 class EditScreen extends StatefulWidget {
@@ -28,9 +27,12 @@ class _EditScreenState extends State<EditScreen> {
         ),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      Navigator.pushNamedAndRemoveUntil(context, '/detail',
-          (route) => route.isFirst, // route.settings.name == '/home'
-          arguments: widget.id);
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/detail',
+        (route) => route.isFirst, // route.settings.name == '/home'
+        arguments: widget.id,
+      );
     } catch (e) {
       var snackBar = const SnackBar(
         content: Text(

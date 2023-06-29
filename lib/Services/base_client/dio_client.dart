@@ -1,8 +1,7 @@
 import 'package:dio/dio.dart';
-
-import 'package:api_call_test/class/post_description.dart';
-import 'package:api_call_test/class/post.dart';
 import 'dart:convert';
+
+import 'package:api_call_test/models/post/post.dart';
 
 class DioClient {
   final Dio _dio = Dio();
@@ -30,13 +29,13 @@ class DioClient {
     return postList;
   }
 
-  Future<PostDescription> getPostDescription(int id) async {
-    late PostDescription description;
+  Future<Post> getPostDescription(int id) async {
+    late Post description;
     try {
       Response postDescription =
           await _dio.get('https://jsonplaceholder.typicode.com/posts/$id');
       Map<String, dynamic> jsonData = postDescription.data;
-      description = PostDescription.fromJson(jsonData);
+      description = Post.fromJson(jsonData);
     } on DioError catch (e) {
       rethrow;
     }

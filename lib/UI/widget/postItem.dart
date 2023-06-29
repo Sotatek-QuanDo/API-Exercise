@@ -1,6 +1,6 @@
-import 'package:api_call_test/screen/detail_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:api_call_test/class/post.dart';
+import 'package:api_call_test/models/post/post.dart';
+import 'package:api_call_test/UI/page/detail_screen.dart';
 
 class PostItem extends StatelessWidget {
   final Post post;

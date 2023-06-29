@@ -1,21 +1,16 @@
-import 'package:api_call_test/screen/add_screen.dart';
-import 'package:api_call_test/class/DioClient.dart';
-import 'package:api_call_test/widget/postItem.dart';
 import 'package:flutter/material.dart';
-import 'package:api_call_test/class/post.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+import 'package:api_call_test/UI/widget/postItem.dart';
+import 'package:api_call_test/models/post/post.dart';
+import 'package:api_call_test/Services/base_client/dio_client.dart';
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreen extends StatelessWidget {
   List<Post> postList = [];
   DioClient client = DioClient();
 
-  void navigateAddScreen() {
+  HomeScreen({super.key});
+
+  void navigateAddScreen(BuildContext context) {
     Navigator.of(context).pushNamed('/add');
   }
 
@@ -27,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              navigateAddScreen();
+              navigateAddScreen(context);
             },
             icon: const Icon(
               Icons.add,
