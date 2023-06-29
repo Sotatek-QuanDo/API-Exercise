@@ -1,9 +1,8 @@
-import 'dart:convert';
-
-import 'package:api_call_test/class/post.dart';
-import 'package:api_call_test/class/post_description.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
+
+import 'package:api_call_test/class/post_description.dart';
+import 'package:api_call_test/class/post.dart';
+import 'dart:convert';
 
 class DioClient {
   final Dio _dio = Dio();

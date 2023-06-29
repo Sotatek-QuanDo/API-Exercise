@@ -28,6 +28,9 @@ class _EditScreenState extends State<EditScreen> {
         ),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Navigator.pushNamedAndRemoveUntil(context, '/detail',
+          (route) => route.isFirst, // route.settings.name == '/home'
+          arguments: widget.id);
     } catch (e) {
       var snackBar = const SnackBar(
         content: Text(
@@ -36,12 +39,6 @@ class _EditScreenState extends State<EditScreen> {
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
-  }
-
-  void navigateDetailScreen() {
-    Navigator.pushNamedAndRemoveUntil(
-        context, '/detail', (route) => route.isFirst,
-        arguments: widget.id);
   }
 
   @override
@@ -128,7 +125,6 @@ class _EditScreenState extends State<EditScreen> {
                                 body,
                               );
                             }
-                            navigateDetailScreen();
                             FocusManager.instance.primaryFocus?.unfocus();
                           },
                           child: const Text('Save'),

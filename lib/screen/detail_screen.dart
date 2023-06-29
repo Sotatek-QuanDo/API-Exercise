@@ -31,7 +31,7 @@ class _DetailScreenState extends State<DetailScreen> {
         ),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      Navigator.popUntil(context, (route) => route.settings.name == '/');
+      Navigator.popUntil(context, (route) => route.settings.name == '/home');
     } catch (e) {
       const snackBar = SnackBar(
         content: Text(

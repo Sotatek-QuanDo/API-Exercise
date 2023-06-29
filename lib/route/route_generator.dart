@@ -10,23 +10,26 @@ class RouteGenerator {
 
     switch (settings.name) {
       case '/home':
-        return MaterialPageRoute(builder: (context) => const HomeScreen());
+        return MaterialPageRoute(
+            builder: (context) => const HomeScreen(), settings: settings);
       case '/detail':
         if (args is int) {
           return MaterialPageRoute(
-              builder: (context) => DetailScreen(id: args));
+              builder: (context) => DetailScreen(id: args), settings: settings);
         } else {
           return MaterialPageRoute(
               builder: (context) => const HomeScreen(), settings: settings);
         }
       case '/edit':
         if (args is int) {
-          return MaterialPageRoute(builder: (context) => EditScreen(id: args));
+          return MaterialPageRoute(
+              builder: (context) => EditScreen(id: args), settings: settings);
         } else {
           return MaterialPageRoute(builder: (context) => const HomeScreen());
         }
       case '/add':
-        return MaterialPageRoute(builder: (context) => AddScreen());
+        return MaterialPageRoute(
+            builder: (context) => AddScreen(), settings: settings);
       default:
         return MaterialPageRoute(builder: (context) => const HomeScreen());
     }
