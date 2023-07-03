@@ -1,4 +1,5 @@
-import 'package:api_call_test/Services/base_client/dio_client.dart';
+import 'package:api_call_test/data/dataproviders/dio_client.dart';
+import 'package:api_call_test/logic/data_bloc/data_bloc.dart';
 import 'package:flutter/material.dart';
 
 class AddScreen extends StatefulWidget {
@@ -16,25 +17,6 @@ class _AddScreenState extends State<AddScreen> {
   final _formKey = GlobalKey<FormState>();
 
   DioClient client = DioClient();
-
-  void _submitForm(int userID, int id, String title, String body) async {
-    try {
-      await client.addNewPost(userID: userID, id: id, title: title, body: body);
-      const snackBar = SnackBar(
-        content: Text(
-          'Add a new post succesfully',
-        ),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    } catch (e) {
-      const snackBar = SnackBar(
-        content: Text(
-          'Add a new post failed',
-        ),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +89,6 @@ class _AddScreenState extends State<AddScreen> {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
-                      _submitForm(userID, id, title, body);
                       Navigator.of(context).pushNamed('/detail', arguments: id);
                     }
 

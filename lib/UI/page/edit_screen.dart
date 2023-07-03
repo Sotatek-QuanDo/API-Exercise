@@ -1,5 +1,8 @@
-import 'package:api_call_test/Services/base_client/dio_client.dart';
+import 'package:api_call_test/data/dataproviders/dio_client.dart';
+import 'package:api_call_test/data/repositories/postData.dart';
+import 'package:api_call_test/logic/detail_bloc/detail_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EditScreen extends StatefulWidget {
   final int id;
@@ -17,30 +20,13 @@ class _EditScreenState extends State<EditScreen> {
   final _formKey = GlobalKey<FormState>();
 
   DioClient client = DioClient();
+  PostData postData = PostData();
+  DetailCubit _detailCubit = DetailCubit();
 
-  onChangePost(int userID, int id, String title, String body) async {
-    try {
-      await client.editPost(userID: userID, id: id, title: title, body: body);
-      var snackBar = const SnackBar(
-        content: Text(
-          'Edit post succesfully',
-        ),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        '/detail',
-        (route) => route.isFirst, // route.settings.name == '/home'
-        arguments: widget.id,
-      );
-    } catch (e) {
-      var snackBar = const SnackBar(
-        content: Text(
-          'Edit post failed',
-        ),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
+  @override
+  void initState() {
+    _detailCubit.getPostDetail(widget.id);
+    super.initState();
   }
 
   @override
@@ -59,14 +45,23 @@ class _EditScreenState extends State<EditScreen> {
             ),
           ),
         ),
-        body: FutureBuilder(
-            future: client.getPostDescription(widget.id),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
+        body: BlocProvider.value(
+          value: _detailCubit,
+          child: BlocListener<DetailCubit, DetailState>(
+            listener: (context, state) {
+              if (state is DetailEdited) {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/detail', (route) => route.isFirst,
+                    arguments: widget.id);
+              }
+            },
+            child: BlocBuilder<DetailCubit, DetailState>(
+                builder: (context, state) {
+              if (state is DetailLoading) {
                 return Container(
                     alignment: Alignment.center,
                     child: const CircularProgressIndicator());
-              } else {
+              } else if (state is DetailLoaded) {
                 return Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Form(
@@ -76,7 +71,7 @@ class _EditScreenState extends State<EditScreen> {
                       children: [
                         TextFormField(
                           keyboardType: TextInputType.number,
-                          initialValue: snapshot.data!.userId.toString(),
+                          initialValue: state.post.userId.toString(),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return "Please enter some text";
@@ -90,7 +85,7 @@ class _EditScreenState extends State<EditScreen> {
                               const InputDecoration(labelText: 'User ID'),
                         ),
                         TextFormField(
-                          initialValue: snapshot.data!.title,
+                          initialValue: state.post.title,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return "Please enter some text";
@@ -103,7 +98,7 @@ class _EditScreenState extends State<EditScreen> {
                           decoration: const InputDecoration(labelText: 'Title'),
                         ),
                         TextFormField(
-                          initialValue: snapshot.data!.body,
+                          initialValue: state.post.body,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return "Please enter some text";
@@ -120,7 +115,7 @@ class _EditScreenState extends State<EditScreen> {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
-                              onChangePost(
+                              _detailCubit.editPost(
                                 userID,
                                 widget.id,
                                 title,
@@ -136,7 +131,10 @@ class _EditScreenState extends State<EditScreen> {
                   ),
                 );
               }
+              return const CircularProgressIndicator();
             }),
+          ),
+        ),
       ),
     );
   }
