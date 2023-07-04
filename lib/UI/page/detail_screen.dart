@@ -30,21 +30,19 @@ class _DetailScreenState extends State<DetailScreen> {
 
   @override
   void initState() {
-    _detailCubid.getPostDetail(widget.id);
     super.initState();
+    context.read<DetailCubit>().getPostDetail(widget.id);
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _detailCubid,
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: const Text('Detail Screen'),
           actions: [
             ElevatedButton(
               onPressed: () {
-                _detailCubid.deletePost(widget.id);
+                context.read<DetailCubit>().deletePost(widget.id);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red, // Set the background color to red
@@ -55,119 +53,110 @@ class _DetailScreenState extends State<DetailScreen> {
             ),
           ],
         ),
-        body: BlocListener<DetailCubit, DetailState>(
-          listener: (context, state) {
-            if (state is DetailDeleting) {
-              Center(
-                child: Column(
-                  children: const [
-                    CircularProgressIndicator(),
-                    Text(
-                      'Data Deleting',
-                    ),
-                  ],
-                ),
-              );
-            }
-            if (state is DetailDeleted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'Deleting completed',
+        body: BlocConsumer<DetailCubit, DetailState>(builder: (context, state) {
+          if (state is DetailInitial) {
+            return Center(
+              child: Column(
+                children: const [
+                  CircularProgressIndicator(),
+                  Text(
+                    'Data Initializing',
                   ),
-                ),
-              );
-              Navigator.popUntil(context, (route) => route.isFirst);
-            }
-          },
-          child: BlocBuilder<DetailCubit, DetailState>(
-            builder: (context, state) {
-              if (state is DetailInitial) {
-                return Center(
-                  child: Column(
-                    children: const [
-                      CircularProgressIndicator(),
-                      Text(
-                        'Data Initializing',
-                      ),
-                    ],
+                ],
+              ),
+            );
+          } else if (state is DetailLoading) {
+            return Center(
+              child: Column(
+                children: const [
+                  CircularProgressIndicator(),
+                  Text(
+                    'Data Loading',
                   ),
-                );
-              } else if (state is DetailLoading) {
-                return Center(
-                  child: Column(
-                    children: const [
-                      CircularProgressIndicator(),
-                      Text(
-                        'Data Loading',
-                      ),
-                    ],
+                ],
+              ),
+            );
+          } else if (state is DetailLoaded) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'User ID: ${state.post.userId}',
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                );
-              } else if (state is DetailLoaded) {
-                return Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'User ID: ${state.post.userId}',
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 8.0),
-                      Text(
-                        'ID: ${state.post.id}',
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 8.0),
-                      const Text(
-                        'Title:',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        '(${state.post.title})',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 8.0),
-                      const Text(
-                        'Body:',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        '(${state.post.body})',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            navigateEditScreen(state.post.id, context);
-                          },
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                              Colors.blue,
-                            ),
-                          ),
-                          child: const Text(
-                            'Edit',
-                          ),
+                  const SizedBox(height: 8.0),
+                  Text(
+                    'ID: ${state.post.id}',
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8.0),
+                  const Text(
+                    'Title:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '(${state.post.title})',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 8.0),
+                  const Text(
+                    'Body:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '(${state.post.body})',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        navigateEditScreen(state.post.id, context);
+                      },
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.blue,
                         ),
                       ),
-                    ],
+                      child: const Text(
+                        'Edit',
+                      ),
+                    ),
                   ),
-                );
-              }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            },
-          ),
-        ),
-      ),
-    );
+                ],
+              ),
+            );
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }, listener: (context, state) {
+          if (state is DetailDeleting) {
+            Center(
+              child: Column(
+                children: const [
+                  CircularProgressIndicator(),
+                  Text(
+                    'Data Deleting',
+                  ),
+                ],
+              ),
+            );
+          }
+          if (state is DetailDeleted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Deleting completed',
+                ),
+              ),
+            );
+            Navigator.popUntil(context, (route) => route.isFirst);
+          }
+        }));
   }
 }

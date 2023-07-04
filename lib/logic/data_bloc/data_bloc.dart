@@ -7,7 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 part 'data_state.dart';
 
 class DataCubit extends Cubit<DataState> {
-  DataCubit() : super(DataLoading());
+  DataCubit() : super(DataLoading()) {
+    getPostList();
+  }
   final DioClient _dio = DioClient();
   final PostData _postData = PostData();
 

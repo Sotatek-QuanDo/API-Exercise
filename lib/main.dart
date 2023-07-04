@@ -1,9 +1,11 @@
+import 'package:api_call_test/logic/data_bloc/data_bloc.dart';
+import 'package:api_call_test/logic/detail_bloc/detail_bloc.dart';
 import 'package:api_call_test/route/route_generator.dart';
-import 'package:api_call_test/UI/page/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
-  runApp(MainApp());
+  runApp(const MainApp());
 }
 
 class MainApp extends StatelessWidget {
@@ -11,9 +13,19 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      initialRoute: '/',
-      onGenerateRoute: RouteGenerator.generateRoute,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => DataCubit(),
+        ),
+        BlocProvider(
+          create: (context) => DetailCubit(),
+        ),
+      ],
+      child: const MaterialApp(
+        initialRoute: '/',
+        onGenerateRoute: RouteGenerator.generateRoute,
+      ),
     );
   }
 }

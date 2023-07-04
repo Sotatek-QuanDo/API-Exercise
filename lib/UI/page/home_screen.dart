@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:api_call_test/UI/widget/postItem.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -14,69 +14,58 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   PostData postData = PostData();
-  DataCubit _dataCubit = DataCubit();
 
   void navigateAddScreen(BuildContext context) {
     Navigator.of(context).pushNamed('/add');
   }
 
   @override
-  void initState() {
-    super.initState();
-    _dataCubit.getPostList();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Api Call Test'),
-          actions: [
-            IconButton(
-              onPressed: () {
-                navigateAddScreen(context);
-              },
-              icon: const Icon(
-                Icons.add,
-              ),
-            ),
-          ],
-        ),
-        body: BlocProvider.value(
-          value: _dataCubit,
-          child: BlocListener<DataCubit, DataState>(
-            listener: (context, state) {
-              if (state is DataLoaded) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Load the data succesfully',
-                    ),
-                  ),
-                );
-              }
+      appBar: AppBar(
+        title: const Text('Api Call Test'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              navigateAddScreen(context);
             },
-            child: BlocBuilder<DataCubit, DataState>(
-              builder: (context, state) {
-                if (state is DataInitial) {
-                  return const Center(child: Text('Initial'));
-                } else if (state is DataLoading) {
-                  return const Center(child: Text('Loading'));
-                } else if (state is DataLoaded) {
-                  return Column(children: [
-                    Expanded(
-                        child: ListView.builder(
-                      itemBuilder: (context, index) {
-                        return PostItem(post: state.post[index]);
-                      },
-                      itemCount: state.post.length,
-                    )),
-                  ]);
-                }
-                return Container();
-              },
+            icon: const Icon(
+              Icons.add,
             ),
           ),
-        ));
+        ],
+      ),
+      body: BlocConsumer<DataCubit, DataState>(
+        listener: (context, state) {
+          if (state is DataLoaded) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Load the data succesfully',
+                ),
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is DataInitial) {
+            return const Center(child: Text('Initial'));
+          } else if (state is DataLoading) {
+            return const Center(child: Text('Loading'));
+          } else if (state is DataLoaded) {
+            return Column(children: [
+              Expanded(
+                  child: ListView.builder(
+                itemBuilder: (context, index) {
+                  return PostItem(post: state.post[index]);
+                },
+                itemCount: state.post.length,
+              )),
+            ]);
+          }
+          return Container();
+        },
+      ),
+    );
   }
 }
